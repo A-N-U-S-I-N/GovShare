@@ -66,7 +66,7 @@ function DashboardPage() {
       alert('File not available');
       return;
     }
-    const url = `http://localhost:5000/uploads/${doc.filename}`;
+    const url = `${process.env.REACT_APP_BACKEND_URL}/uploads/${doc.filename}`;
     window.open(url, '_blank');
   };
 
