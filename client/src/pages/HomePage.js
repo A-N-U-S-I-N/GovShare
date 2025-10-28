@@ -8,6 +8,8 @@ function HomePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -24,7 +26,7 @@ function HomePage() {
 
     try {
       setLoading(true);
-      const res = await axios.post('/api/feedback', { email, feedback });
+      const res = await axios.post(`${backendUrl}/api/feedback`, { email, feedback });
       setSuccess(res.data.message);
       setEmail('');
       setFeedback('');
