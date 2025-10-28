@@ -31,19 +31,6 @@ This is a full-stack MERN (MongoDB, Express, React, Node.js) web application tha
 
 ---
 
-## Usage
-
-1. Clone repository and install dependencies for server and client.
-2. Setup environment variables (`.env`) with MongoDB URI, JWT secret, etc.
-3. Run backend server with `npm run dev` or `node app.js`.
-4. Run React frontend with `npm start`.
-5. Register a new user and log in.
-6. Upload Aadhaar-linked documents securely.
-7. Manage documents (edit, delete) or share with family members via email.
-8. Update profile info and upload profile picture.
-
----
-
 ## Future Enhancements
 
 ### OTP-Based Verification
