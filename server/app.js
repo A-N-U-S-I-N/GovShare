@@ -29,7 +29,7 @@ const logger = winston.createLogger({
 app.use(cors());
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://govshare.vercel.app',
   optionsSuccessStatus: 200,
 };
 
