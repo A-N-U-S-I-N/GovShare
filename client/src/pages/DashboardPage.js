@@ -59,8 +59,6 @@ function DashboardPage() {
     }
   };
 
-  const backendUrl = 'http://your-backend-url.com';
-
   const handleView = (doc) => {
     if (!doc.filename) {
       alert('File not available');
