@@ -4,19 +4,20 @@ import { Link } from 'react-router-dom';
 
 function ProfilePage() {
   const [form, setForm] = useState({});
-  const [profilePicFile, setProfilePicFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
 
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('token');
       try {
-        const res = await axios.get('/api/user/me', { headers: { 'x-auth-token': token } });
+        const res = await axios.get(`${backendUrl}/api/user/me`, { headers: { 'x-auth-token': token } });
         setForm(res.data);
-        if (res.data.profilePic) setPreviewUrl(`${process.env.REACT_APP_BACKEND_URL}/uploads/${res.data.profilePic}`);
+        if (res.data.profilePic) setPreviewUrl(`${backendUrl}/uploads/${res.data.profilePic}`);
       } catch {
         setError('Failed to load profile.');
       } finally {
@@ -24,69 +25,67 @@ function ProfilePage() {
       }
     };
     fetchProfile();
-  }, []);
+  }, [backendUrl]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  setProfilePicFile(file);
-  if (file) {
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
+    const file = e.target.files[0];
+    if (file) {
+      const localUrl = URL.createObjectURL(file);
+      setPreviewUrl(localUrl);
 
+      try {
+        const token = localStorage.getItem('token');
+        const data = new FormData();
+        data.append('profilePic', file);
+
+        const res = await axios.put(`${backendUrl}/api/user/me`, data, {
+          headers: {
+            'x-auth-token': token,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log('Profile pic upload success:', res);
+        setSuccess('Profile picture updated successfully!');
+        if (res.data.profilePic) {
+          setPreviewUrl(`${backendUrl}/uploads/${res.data.profilePic}`);
+        }
+      } catch (err) {
+        console.error('Profile pic upload error:', err);
+        setError('Failed to update profile picture.');
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSuccess('');
+    setError('');
     try {
       const token = localStorage.getItem('token');
       const data = new FormData();
-      data.append('profilePic', file);
 
-      const res = await axios.put('/api/user/me', data, {
+      data.append('name', form.name || '');
+      data.append('email', form.email || '');
+      data.append('aadhaar', form.aadhaar || '');
+      data.append('address', form.address || '');
+
+      const res = await axios.put(`${backendUrl}/api/user/me`, data, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log('Profile pic upload success:', res);
-      setSuccess('Profile picture updated successfully!');
-      if (res.data.profilePic) {
-        setPreviewUrl(`${process.env.REACT_APP_BACKEND_URL}/uploads/${res.data.profilePic}`);
-      }
+      console.log('Profile update success:', res);
+      setSuccess('Profile updated successfully!');
     } catch (err) {
-      console.error('Profile pic upload error:', err);
-      setError('Failed to update profile picture.');
+      console.error('Profile update error:', err);
+      setError(err.response?.data?.message || 'Failed to update profile.');
     }
-  }
-};
-
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSuccess('');
-  setError('');
-  try {
-    const token = localStorage.getItem('token');
-    const data = new FormData();
-
-    data.append('name', form.name || '');
-    data.append('email', form.email || '');
-    data.append('aadhaar', form.aadhaar || '');
-    data.append('address', form.address || '');
-
-    const res = await axios.put('/api/user/me', data, {
-      headers: {
-        'x-auth-token': token,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    console.log('Profile update success:', res);
-    setSuccess('Profile updated successfully!');
-  } catch (err) {
-    console.error('Profile update error:', err);
-    setError(err.response?.data?.message || 'Failed to update profile.');
-  }
-};    
+  };    
 
   if (loading) return <div>Loading...</div>;
 
@@ -115,7 +114,7 @@ function ProfilePage() {
           >
             {previewUrl ? (
               <img
-                src={previewUrl || `/uploads/${form.profilePic}`}
+                src={previewUrl}
                 alt="Profile preview"
                 style={{ width: 120, height: 120, objectFit: 'cover' }}
                 onError={() => setPreviewUrl('default-profile-icon.png')}
@@ -143,15 +142,13 @@ function ProfilePage() {
           <input name="address" value={form.address || ''} onChange={handleChange} className="form-control mb-2" placeholder="Address" />
 
           <button className="btn btn-primary w-100 mt-3" type="submit" disabled={loading}>
-  {loading ? 'Updating...' : 'Update'}
-</button>
-
-
+            {loading ? 'Updating...' : 'Update'}
+          </button>
         </form>
-        <p className="mt-3 text-center">
-        Reset password? <Link to={`/reset-password?token=${form.resetPasswordToken}`}>Reset here</Link>
 
-      </p>
+        <p className="mt-3 text-center">
+          Reset password? <Link to={`/reset-password?token=${form.resetPasswordToken}`}>Reset here</Link>
+        </p>
       </div>
     </div>
   );
