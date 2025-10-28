@@ -16,7 +16,7 @@ function ProfilePage() {
       try {
         const res = await axios.get('/api/user/me', { headers: { 'x-auth-token': token } });
         setForm(res.data);
-        if (res.data.profilePic) setPreviewUrl(`http://localhost:5000/uploads/${res.data.profilePic}`);
+        if (res.data.profilePic) setPreviewUrl(`${process.env.REACT_APP_BACKEND_URL}/uploads/${res.data.profilePic}`);
       } catch {
         setError('Failed to load profile.');
       } finally {
@@ -50,7 +50,7 @@ function ProfilePage() {
       console.log('Profile pic upload success:', res);
       setSuccess('Profile picture updated successfully!');
       if (res.data.profilePic) {
-        setPreviewUrl(`http://localhost:5000/uploads/${res.data.profilePic}`);
+        setPreviewUrl(`${process.env.REACT_APP_BACKEND_URL}/uploads/${res.data.profilePic}`);
       }
     } catch (err) {
       console.error('Profile pic upload error:', err);
