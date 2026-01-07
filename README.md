@@ -48,7 +48,3 @@ This is a full-stack MERN (MongoDB, Express, React, Node.js) web application tha
 - Include environment config, SSL setup, domain mapping, and scaling considerations.
 
 ---
-
-## Author
-
-Anushka Singh — [GitHub Profile](https://github.com/A-N-U-S-I-N)
